@@ -1,0 +1,24 @@
+# Entorno virtual
+.venv/
+
+# Credenciales
+.env
+**/.streamlit/secrets.toml
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Datos pesados
+data/raw/
+data/processed/
+
+
+carga.ipynb
+routes.py
+
+
+.env
+**/.streamlit/secrets.toml
+__pycache__/
+.venv/
