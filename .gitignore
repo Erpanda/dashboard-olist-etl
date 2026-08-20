@@ -18,7 +18,5 @@ carga.ipynb
 routes.py
 
 
-.env
-**/.streamlit/secrets.toml
-__pycache__/
-.venv/
+notas-etl.md
+

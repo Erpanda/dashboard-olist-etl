@@ -1,88 +1,313 @@
-Primero creamos un entorno virtual: -m venv
-=> py -3.12 -m venv .venv
-   .venv\Scripts\Activate
+# Olist ETL & Analytics Dashboard
 
-Activar el entorno: Activate
-=> Verificamos la dirección del entorno: python -c "import sys; print(sys.executable)"
+Proyecto de ingeniería de datos enfocado en la construcción de un
+**pipeline ETL**, modelado dimensional en **PostgreSQL** y visualización
+de métricas mediante un **dashboard interactivo en Streamlit**.
 
-=> Instalaremos las librerias
-    python -m pip install --upgrade pip
-    python -m pip install pandas streamlit plotly altair sqlalchemy "psycopg[binary]" python-dotenv
+El proyecto utiliza el dataset público de **Olist E-commerce** para
+transformar datos transaccionales en información útil para el análisis
+de ventas, clientes, productos, pagos y entregas.
 
-Se utiliza "python -m pip" para instalar las librerias dentro del entorno virtual
-    - Streamlit => entorno web interactivo
-    - altair => graficos declarativos
-    - psycopg => conexion con PostgrSQL
-    - python_dotenv => cargar credenciales de un .env
+------------------------------------------------------------------------
 
-Definimos las versiones instaladas para su descarga en otros entorno: requeriments.txt
-    - python -m pip freeze > requirements.txt
-    Su instalacion es: python -m pip install -r requeriments.txt
-    - Verificamos la instalación: python -c "import pandas, streamlit, plotly, altair, sqlalchemy, psycopg, dotenv; print('Instalación correcta')"
+## Tecnologías
 
-Definimos la estructura del proyecto:
-    olist-dashboard-etl/
-    ├── .venv/
-    ├── dashboard/       # Aplicación web de Streamlit
-    ├── data/
-    │   ├── raw/         # CSV originales sin modificar (datos crudos)
-    │   └── processed/   # Datos resultantes de la transformación (datos limpios)
-    ├── sql/             # Modelo y consultas de PostgreSQL
-    ├── src/             # Código del pipeline ETL
-    ├── tests/           # Pruebas del proyecto
-    └── requirements.txt
+-   **Python**
+-   **Pandas**
+-   **PostgreSQL**
+-   **SQLAlchemy**
+-   **Psycopg**
+-   **Streamlit**
+-   **Plotly**
+-   **Altair**
 
-Definición de procesos:
-    => extract: data/raw
-    => transform: src
-    => load: PostgresSQL/Supabase
+------------------------------------------------------------------------
 
-.resolse() => definie al ruta en absoluta
-.glob() => Buscar y filtrar
+## Arquitectura
 
-Path.(__file__).resolve().perent.parent
+``` text
+CSV Raw Data
+     │
+     ▼
+ Extract
+     │
+     ▼
+ Transform
+     │
+     ▼
+ Validate
+     │
+     ▼
+ PostgreSQL
+     │
+     ├── Dimensions
+     ├── Facts
+     └── Analytical Views
+              │
+              ▼
+       Streamlit Dashboard
+```
 
-En la lectura de los csv=> 
-    - pd.low_memory: hace la lectura de manera entera, no en bloques (=True)
+El pipeline sigue tres etapas principales:
 
-Diferencia enter un .sum()y doble .sum() ne pd:
-    => nulos doble: sumar por filas y columnas (devulve una matriz)
-    => duplicaos uno solo: duma por filas repetidas
+**Extract → Transform → Load**
 
+-   **Extract:** lectura de los datasets originales de Olist.
+-   **Transform:** limpieza, normalización, conversión de tipos y
+    generación de métricas.
+-   **Load:** carga de dimensiones y tablas de hechos en PostgreSQL
+    mediante operaciones `UPSERT`.
 
-.isna().any(exis=1).sum() => evalua celda por celda, luego se agrupa por fila, aqui al ser de una sola columna no es necesario, aplica el any cuando son mas columnas y se aplica TRUE por fila ._.
+------------------------------------------------------------------------
 
-(subset=columna) => Solo identifica los duplicados de esa columna
-.toString(index=False) => Pasar un Dataframe a texto sin indices de los Dataframe
-.loc => seleccionar y filtrara datos de un DF en base a sus etiquetas (nombre de las filas/indices)
+## Estructura del proyecto
 
-.plit() => Divide por espacios, y "maxsplit=n" separa segn el numero de espacios
+``` text
+olist-dashboard-etl/
+│
+├── dashboard/
+│   ├── app.py
+│   └── db_connection.py
+│
+├── data/
+│   ├── raw/
+│   └── config.py
+│
+├── src/
+│   ├── db/
+│   │   └── connection.py
+│   ├── etl/
+│   │   ├── extract.py
+│   │   ├── transform.py
+│   │   └── load.py
+│   ├── validate_key.py
+│   ├── validate_relations.py
+│   └── explore_data.py
+│
+├── sql/
+│   └── schema.sql
+│
+├── requirements.txt
+└── README.md
+```
 
-=> pd.cut() => agrupar y segmentar datos continuos en intervalos
+------------------------------------------------------------------------
 
-    df["score_category"] = pd.cut(
-        df["review_score"], 
-        bins=bins,  #rangos: uno mas que los labels
-        labels=labels
-    )
+## Modelo de datos
 
-.lt() => lo opuesto a .gt() ,aplica true a los menores 
+La base de datos utiliza un modelo dimensional dentro del esquema
+`analytics`.
 
-.loc() filtro pro etiqueaty y cunta el final
-.iloc() => filtro pro indice pero noc uenta el final
+### Dimensiones
 
+``` text
+dim_customers
+dim_products
+dim_sellers
+```
 
+### Tablas de hechos
 
+``` text
+fact_orders
+fact_order_items
+fact_payments
+fact_reviews
+```
 
+Además, se utilizan claves sustitutas, claves foráneas, restricciones e
+índices para mantener la integridad y facilitar las consultas
+analíticas.
 
+------------------------------------------------------------------------
 
+## Vistas analíticas
 
+El dashboard consume vistas SQL diseñadas para obtener métricas
+previamente procesadas:
 
+``` text
+vw_monthly_sales
+vw_sales_by_state
+vw_category_performance
+vw_sales_state_month
+vw_payment_behavior
+vw_delivery_performance
+```
 
+Estas vistas permiten separar la lógica analítica de la interfaz del
+dashboard.
 
+------------------------------------------------------------------------
 
+## Dashboard
 
+La aplicación desarrollada con **Streamlit** consulta PostgreSQL y
+presenta indicadores y visualizaciones sobre:
 
+-   Evolución de ventas
+-   Ventas por estado
+-   Rendimiento por categoría
+-   Métodos de pago
+-   Comportamiento de entregas
+-   Satisfacción del cliente
 
+Las visualizaciones se construyen principalmente con **Plotly** y
+**Altair**.
 
+------------------------------------------------------------------------
 
+## Instalación
+
+### 1. Clonar el repositorio
+
+``` bash
+git clone <repo-url>
+cd olist-dashboard-etl
+```
+
+### 2. Crear entorno virtual
+
+``` bash
+python -m venv .venv
+```
+
+En Windows:
+
+``` bash
+.venv\Scripts\activate
+```
+
+### 3. Instalar dependencias
+
+``` bash
+pip install -r requirements.txt
+```
+
+------------------------------------------------------------------------
+
+## Configuración de PostgreSQL
+
+Crear un archivo `.env` en la raíz:
+
+``` env
+DB_HOST=tu_host
+DB_PORT=5432
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+DB_NAME=tu_base_de_datos
+```
+
+Las credenciales reales **no deben subirse al repositorio**.
+
+Para Streamlit pueden configurarse mediante `.streamlit/secrets.toml` o
+directamente mediante los secretos del entorno de despliegue.
+
+------------------------------------------------------------------------
+
+## Ejecutar el ETL
+
+Para ejecutar el pipeline completo:
+
+``` bash
+python src/etl/load.py
+```
+
+También pueden ejecutarse las etapas individualmente:
+
+``` bash
+python src/etl/extract.py
+python src/etl/transform.py
+```
+
+### Validación de datos
+
+``` bash
+python src/validate_key.py
+python src/validate_relations.py
+```
+
+Estos scripts permiten detectar duplicados, claves inválidas y
+relaciones huérfanas antes de realizar la carga.
+
+------------------------------------------------------------------------
+
+## Ejecutar el dashboard
+
+Primero debe ejecutarse `sql/schema.sql` y cargarse la información
+mediante el pipeline ETL.
+
+Después:
+
+``` bash
+streamlit run dashboard/app.py
+```
+
+La aplicación se iniciará localmente y consultará las vistas disponibles
+en PostgreSQL.
+
+------------------------------------------------------------------------
+
+## Dataset
+
+El proyecto utiliza los datasets de **Olist Brazilian E-Commerce**,
+incluyendo información relacionada con:
+
+-   Customers
+-   Orders
+-   Order Items
+-   Products
+-   Sellers
+-   Payments
+-   Reviews
+-   Product Categories
+
+Los archivos originales se almacenan en `data/raw/`.
+
+------------------------------------------------------------------------
+
+## Flujo general
+
+``` text
+Olist CSV
+    │
+    ▼
+Extracción
+    │
+    ▼
+Transformación
+    │
+    ▼
+Validación
+    │
+    ▼
+Modelo dimensional
+    │
+    ▼
+PostgreSQL
+    │
+    ▼
+Vistas analíticas
+    │
+    ▼
+Streamlit Dashboard
+```
+
+------------------------------------------------------------------------
+
+## Seguridad
+
+El proyecto mantiene las credenciales fuera del código fuente mediante:
+
+-   `.env` para el pipeline ETL.
+-   `st.secrets` para Streamlit.
+-   `.gitignore` para evitar publicar información sensible.
+
+------------------------------------------------------------------------
+
+## Objetivo
+
+Este proyecto busca aplicar un flujo completo de **Data Engineering +
+Data Analytics**, desde datos crudos hasta su transformación en
+indicadores visuales útiles para el análisis del comportamiento
+comercial de un e-commerce.
