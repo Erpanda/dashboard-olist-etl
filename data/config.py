@@ -3,6 +3,40 @@ import os
 
 # -- ======================================
 
+CANDIDATE_KEYS = {
+    "olist_customers_dataset.csv": ["customer_id"],
+    "olist_orders_dataset.csv": ["order_id", "customer_id"],
+    "olist_order_items_dataset.csv": ["order_id", "order_item_id", "product_id", "seller_id"],
+    "olist_products_dataset.csv": ["product_id"],
+    "olist_sellers_dataset.csv": ["seller_id"],
+    "olist_order_payments_dataset.csv": [
+        "order_id",
+        "payment_sequential",
+    ],
+    "olist_order_reviews_dataset.csv": [
+        "review_id",
+        "order_id",
+    ],
+    "product_category_name_translation.csv": [
+        "product_category_name"
+    ],
+}
+
+# =======================================================================
+
+FILES_CONFIG_RELATIONS = {
+    "customers": ("olist_customers_dataset.csv", ["customer_id"]),
+    "orders": ("olist_orders_dataset.csv", ["order_id", "customer_id"]),
+    "items": ("olist_order_items_dataset.csv", ["order_id", "product_id", "seller_id"]),
+    "products": ("olist_products_dataset.csv", ["product_id", "product_category_name"]),
+    "sellers": ("olist_sellers_dataset.csv", ["seller_id"]),
+    "payments": ("olist_order_payments_dataset.csv", ["order_id"]),
+    "reviews": ("olist_order_reviews_dataset.csv", ["order_id"]),
+    "translations": ("product_category_name_translation.csv", ["product_category_name"]),
+}
+
+# -- ======================================
+
 DATE_COLUMNS_ORDERS = [
     "order_purchase_timestamp",
     "order_approved_at",

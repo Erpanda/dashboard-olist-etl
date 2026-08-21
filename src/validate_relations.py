@@ -1,8 +1,13 @@
-# Identificador de claves huerfanas: claves sin presencia en tablas principales
+import sys
 from pathlib import Path
 import pandas as pd
 
 PROJECT_ROT = Path(__file__).resolve().parent.parent
+
+if str(PROJECT_ROT) not in sys.path:
+    sys.path.append(str(PROJECT_ROT))
+
+from data.config import FILES_CONFIG_RELATIONS
 RAW_DATA_DIR = PROJECT_ROT / "data" / "raw"
 OUTPUT_TXT = PROJECT_ROT / "relaciones.txt"
 
@@ -14,18 +19,7 @@ def read_columns(filename, columns):
         low_memory=False
     )
 
-files_config = {
-    "customers": ("olist_customers_dataset.csv", ["customer_id"]),
-    "orders": ("olist_orders_dataset.csv", ["order_id", "customer_id"]),
-    "items": ("olist_order_items_dataset.csv", ["order_id", "product_id", "seller_id"]),
-    "products": ("olist_products_dataset.csv", ["product_id", "product_category_name"]),
-    "sellers": ("olist_sellers_dataset.csv", ["seller_id"]),
-    "payments": ("olist_order_payments_dataset.csv", ["order_id"]),
-    "reviews": ("olist_order_reviews_dataset.csv", ["order_id"]),
-    "translations": ("product_category_name_translation.csv", ["product_category_name"]),
-}
-
-dfs = {name: read_columns(file, cols) for name, (file, cols) in files_config.items()}
+dfs = {name: read_columns(file, cols) for name, (file, cols) in FILES_CONFIG_RELATIONS.items()}
 customers, orders, items, products, sellers, payments, reviews, translations = dfs.values()
 
 keys_check_data = []
@@ -43,7 +37,6 @@ def validate_foreign_key(relation_name, child_df, foreign_key, parent_df, primar
 
     # Por defectos siemrpe sumimos la bsuqueda de True
     # Alineación por indice (fila)
-    # orphan_values = child_df.loc[non_null_values[orphan_mask].index, foreign_key].tolist()
 
     unique_orphan_keys = (
         orphan_values

@@ -1,32 +1,18 @@
+import sys
 import pandas as pd
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
-# Identificamos los atributos PK/FK
-candidate_keys = {
-    "olist_customers_dataset.csv": ["customer_id"],
-    "olist_orders_dataset.csv": ["order_id", "customer_id"],
-    "olist_order_items_dataset.csv": ["order_id", "order_item_id", "product_id", "seller_id"],
-    "olist_products_dataset.csv": ["product_id"],
-    "olist_sellers_dataset.csv": ["seller_id"],
-    "olist_order_payments_dataset.csv": [
-        "order_id",
-        "payment_sequential",
-    ],
-    "olist_order_reviews_dataset.csv": [
-        "review_id",
-        "order_id",
-    ],
-    "product_category_name_translation.csv": [
-        "product_category_name"
-    ],
-}
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+from data.config import CANDIDATE_KEYS
+RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
 results =[]
 
-for filename, key_col in candidate_keys.items():
+for filename, key_col in CANDIDATE_KEYS.items():
     file_path = RAW_DATA_DIR / filename
 
     df = pd.read_csv(file_path, low_memory=False)

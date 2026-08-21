@@ -29,13 +29,7 @@ def run_query(query, params=None):
 # -- ==============================
 
 # => Aplicación de la libreria streamlit; connnection SQLpostgres (una sola vez, para siempre)
-'''
-Crea la conección UNA sola vez por sesión de la app. Streamlit reutiliza este mismo objeto en cada rerun,
-en vez de abrir una conexión nueva cada vez que el usuario toca un filtro.
-'''
+# Crea la conección UNA sola vez por sesión de la app. 
 
 # => Aplicación de la libreria streamlit; ejecución de QUERY (actualización cada N timepo en caso de actualizaciones)
-'''
-Ejecuta una query y cachea el RESULTADO (no la conexión). Si dos usuarios (o dos filtros) piden exactamente la misma
-query con los mismos parámetros, Streamlit devuelve el estop eresultado guardado en vez de golpear la base de nuevo.
-'''
+# Ejecuta una query y cachea el RESULTADO (no la conexión). 

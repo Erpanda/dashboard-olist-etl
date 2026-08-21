@@ -4,13 +4,10 @@ import pandas as pd
 # Carpeta raiz del proyecto
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Definimos la ruta inical de los CSV
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 
-# Reporte de exporación de arcvhios CSV
 OUTPUT_TXT = PROJECT_ROOT / "columnas.txt"
 
-# Buscamos y ordenamos los CSV
 csv_files = sorted(RAW_DATA_DIR.glob("*.csv"))
 
 if not csv_files:
@@ -18,10 +15,8 @@ if not csv_files:
         f"No se encontraron archvos CSV en el directorio: {RAW_DATA_DIR}"
     )
 
-# Conjunto de datos csv
 summary = []
 
-# Procesamos los archvios al simultaneo para no mantenerlos todos en memoria
 for csv_file in csv_files:
     df = pd.read_csv(csv_file, low_memory=False)
 
@@ -39,7 +34,6 @@ for csv_file in csv_files:
         f.write(f"\nArchivo: {csv_file.name}\n")
         f.write(f"Columnas: {df.columns.tolist()}\n")
 
-    # Liberamos el DF antes del siguiente (no ocupar mucho espacio)
     del df
 
 summary_df = pd.DataFrame(summary)
