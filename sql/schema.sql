@@ -161,22 +161,22 @@ REVOKE ALL ON ALL TABLES IN SCHEMA analytics
 FROM anon, authenticated;
 
 -- Verificación de tablas
-SELECT table_schema, table_name
-FROM information_schema.tables
-WHERE table_schema = 'analytics'
-ORDER BY table_name;
+-- SELECT table_schema, table_name
+-- FROM information_schema.tables
+-- WHERE table_schema = 'analytics'
+-- ORDER BY table_name;
 
-SELECT
-    table_name,
-    constraint_name,
-    constraint_type
-FROM information_schema.table_constraints
-WHERE table_schema = 'analytics' AND (
-  constraint_name LIKE 'pk%' OR
-  constraint_name LIKE 'fk%' OR
-  constraint_name LIKE 'uq%'
-)
-ORDER BY table_name, constraint_type;
+-- SELECT
+--     table_name,
+--     constraint_name,
+--     constraint_type
+-- FROM information_schema.table_constraints
+-- WHERE table_schema = 'analytics' AND (
+--   constraint_name LIKE 'pk%' OR
+--   constraint_name LIKE 'fk%' OR
+--   constraint_name LIKE 'uq%'
+-- )
+-- ORDER BY table_name, constraint_type;
 
 -- ==========================================================================
 
@@ -223,10 +223,6 @@ JOIN analytics.dim_products p ON i.product_key = p.product_key
 LEFT JOIN analytics.fact_reviews r ON i.order_key = r.order_key
 GROUP BY p.category_name
 ORDER BY total_revenue DESC;
-
-select * from analytics.vw_monthly_sales;
-select * from analytics.vw_sales_by_state;
-select * from analytics.vw_category_performance;
 
 CREATE OR REPLACE analytics.vw_sales_state_month AS
 SELECT

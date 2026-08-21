@@ -119,6 +119,22 @@ Además, se utilizan claves sustitutas, claves foráneas, restricciones e
 índices para mantener la integridad y facilitar las consultas
 analíticas.
 
+### Creación de la Base de Datos - Schema "analytics"
+
+#### Pasos de ejecución
+
+1. **Abrir la terminal en VS Code:**
+   Asegúrate de estar en la carpeta raíz de tu proyecto (donde se encuentra la carpeta `sql/`).
+
+2. **Reemplazar credenciales:**
+   Sustituye `[DB_USER]`, `[DB_PASSWORD]` y `[DB_PORT]` por tus datos reales de Supabase. Ten en cuenta que el puerto varía según si utilizas una conexión mediante IPv4 o IPv6.
+
+3. **Ejecutar el comando:**
+   Copia y ejecuta la siguiente línea en tu terminal:
+
+```bash
+psql "postgresql://[DB_USER]:[DB_PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:[DB_PORT]/postgres" -f sql/schema.sql
+
 ------------------------------------------------------------------------
 
 ## Vistas analíticas
