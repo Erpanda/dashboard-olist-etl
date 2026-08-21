@@ -134,6 +134,7 @@ analíticas.
 
 ```bash
 psql "postgresql://[DB_USER]:[DB_PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:[DB_PORT]/postgres" -f sql/schema.sql
+```
 
 ------------------------------------------------------------------------
 
